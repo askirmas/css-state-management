@@ -1,7 +1,7 @@
-import { stringify } from "querystring"
 import config from "./reactive_config.json"
 
-const {
+const {keys: $keys} = Object
+, {
   listenerAttribute,
   viewerAttribute
 } = config
@@ -19,7 +19,7 @@ function subscribe(...variables: (undefined|string)[]) {
 }
 
 function viewerProps(model: Record<string|number, string|number>) {
-  const properties = Object.keys(model)
+  const properties = $keys(model)
   .map(property => iding(property, model[property]))
 
   return attributing(viewerAttribute, properties)
@@ -37,14 +37,24 @@ function attributing(base: string, entries: string[]) {
   return attributes
 }
 
-function iding(property?: number|string, value?: number|string) {
-  return  allowedTypes.has(typeof property) && allowedTypes.has(typeof value)
-  ? `${property}--${value}`
-  : undefined
+function iding(property?: number|string, value?: unknown) {
+  if (!allowedTypes.has(typeof property))
+    return
+
+  // TODO check with `hasOwnProperty`
+  const stringed = value?.toString?.()
+
+  return `${
+    property
+  }${
+    stringed === undefined
+    ? ""
+    : `--${stringed}`
+  }`
 }
 
 
-function modelProps(property?: number|string, value?: number|string, store?: string) {
+function modelProps(property?: number|string, value?: unknown, store?: string) {
   return {
     "id": iding(property, value),
     "name": property?.toString(),
