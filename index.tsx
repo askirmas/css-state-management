@@ -1,78 +1,78 @@
-import type { DetailedHTMLProps, InputHTMLAttributes, LabelHTMLAttributes, PropsWithChildren, ReactNode } from "react"
+import type { ReactNode } from "react"
+import {memo} from "react"
+import tryCall  from "./tryCall"
+import type { DataOrFunction } from "./tryCall"
+import {iding, subscribe, modelProps, viewerProps} from "./helpers"
+import type { tControllerProps, tInputProps, tSchema, tStoreProps } from "./defs"
+import { getIdentifier, resolve } from "./resolve"
 
-import {iding, subscribe, modelProps, viewerProps} from "./utils"
+const StoreMemed = memo(ModelStore)
+, ControllerMemed = memo(Controller)
 
-type tLabelProps = Omit<
-  DetailedHTMLProps<LabelHTMLAttributes<HTMLLabelElement>, HTMLLabelElement>,
-  "htmlFor"
->
-type tInputProps = Omit<
-  DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>,
-  "name"|"type"|"value"
->
-
-type tEntry = {
-  "property": string|number
-  "value": string|number
-}
-
-type tControllerProps = PropsWithChildren<tLabelProps & Partial<
-  tEntry
-  & {
-    "subscribe": string
-  }
->>
-
-type sBoolean = {
-  "type": "boolean"
-}
-
-type tStoreProps = {
-  "schema": {
-    // TODO $ref? -> form
-    // TODO "namespace": string
-    // TODO "required" helps to default item#0
-    "properties": Record<string, Partial<
-      sBoolean
-      & {
-        "default": unknown
-        "enum": unknown[] // TODO "oneOf": unknown[]
-
-        "properties": Record<string, unknown>
-
-        "maxProperties": number
-        "maxItems": number
-        "items": unknown[] | Record<string, unknown>
-      }
-    >>
-  }
-} & tInputProps
-
-const {keys: $keys} = Object
-, {isArray: $isArray} = Array
-
-export type {
-  tControllerProps
-}
-
+export default create
 export {
-  Store, Controller,
+  ModelStore, Controller,
   modelProps, viewerProps, subscribe
 }
 
-function Store({schema: {properties}, ...props}: tStoreProps) {
+function create<P extends string = string>(
+  schema: tSchema<P>,
+  storeProps?: tInputProps,
+  controllersProps?: Record<P, DataOrFunction<Parameters<typeof ControllerMemed>[0]>>
+) {
+  const {properties} = schema
+  , Controllers = {} as Record<P, JSX.Element[] | JSX.Element>
+
+  for (const property in properties) {
+    const propertySchema = properties[property]
+    , {
+      type
+    } = propertySchema
+    
+    if (type === "boolean") {
+      //@ts-ignore
+      Controllers[property] = <ControllerMemed {...{
+        "key": property,
+        property,
+        "value": undefined,
+        ...tryCall(controllersProps[property])
+      }}/>
+      continue
+    }
+
+    const {source, length} = resolve(propertySchema)
+    Controllers[property] = new Array(length)
+    const controls = Controllers[property]
+
+    for (let i = length; i--;) {
+      const value = getIdentifier(source, i)
+
+      //@ts-ignore
+      controls[i] = <ControllerMemed {...{
+        "key": `${property}=${value}`,
+        property,
+        value,
+        ...tryCall(controllersProps[property], [value])
+      }}/>
+    }
+  }
+
+  return {
+    "ModelStore": <StoreMemed {...{schema, ...storeProps}} />,
+    Controllers
+  }
+}
+
+function ModelStore({schema: {properties}, ...props}: tStoreProps) {
   const elements: ReactNode[] = []
 
   for (const name in properties) {
-    const {
+    const propertySchema = properties[name]
+    , {
       type,
       "enum": $enum,
-      "properties": nestedProps,
-      maxProperties,
-      items,
-      maxItems,
       "default": $default
-    } = properties[name]
+    } = propertySchema
 
     if (type === "boolean") {
       elements.push(<input {...{
@@ -85,30 +85,20 @@ function Store({schema: {properties}, ...props}: tStoreProps) {
       continue
     }
 
-    const source = $enum
-    ?? (nestedProps ? $keys(nestedProps) : undefined)
-    ?? ($isArray(items) ? items : undefined)
-    , length = source?.length ?? maxProperties ?? maxItems
+    const {source, length} = resolve(propertySchema)
     , els = new Array(length)
     , htmlType = $enum ? "radio": "checkbox"
 
     for (let i = 0; i < length; i++) {
       //TODO fix `value === null`
-      const value = source?.[i] ?? i
-      , normalized = value === null || typeof value !== "object"
-      ? value
-      : value.hasOwnProperty("valueOf")
-      ? +value
-      : value.hasOwnProperty("toString")
-      ? value
-      : i
+      const identifier = getIdentifier(source, i)
 
       els[i] = <input {...{
         "key": `${name}/${i}`,
         "type": htmlType,
         //TODO or `=== normalized`
-        "defaultChecked": $default === value,
-        ...modelProps(name, normalized),
+        "defaultChecked": $default === (source?.[i] ?? i),
+        ...modelProps(name, identifier),
         ...props
       }} />
     }
