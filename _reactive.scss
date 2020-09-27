@@ -1,4 +1,4 @@
-@import "./reactive_config";
+@import "./reactive_config.json";
 
 @function subscriber($property) {
   @return [#{$listenerAttribute}-#{$property}];

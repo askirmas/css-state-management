@@ -1,7 +1,4 @@
-$propagation: "~ *";
-$model-attribute: "id";
-$controller-attribute: "for";
-$viewer-attribute: "data-viewer";
+@import "./mvc_config.json";
 
 @function model-id($property, $value) {
   @return #{$property}--#{$value};
