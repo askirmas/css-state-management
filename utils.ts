@@ -41,8 +41,9 @@ function iding(property?: number|string, value?: unknown) {
   if (!allowedTypes.has(typeof property))
     return
 
-  // TODO check with `hasOwnProperty`
-  const stringed = value?.toString?.()
+  const stringed = value === null || value === undefined
+  ? undefined
+  : value
 
   return `${
     property

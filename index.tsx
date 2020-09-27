@@ -28,21 +28,24 @@ type sBoolean = {
 }
 
 type tStoreProps = {
-  // TODO $ref? -> form
-  // TODO "namespace": string
-  "properties": Record<string, Partial<
-    sBoolean
-    & {
-      "default": unknown
-      "enum": unknown[] // TODO "oneOf": unknown[]
+  "schema": {
+    // TODO $ref? -> form
+    // TODO "namespace": string
+    // TODO "required" helps to default item#0
+    "properties": Record<string, Partial<
+      sBoolean
+      & {
+        "default": unknown
+        "enum": unknown[] // TODO "oneOf": unknown[]
 
-      "properties": Record<string, unknown>
+        "properties": Record<string, unknown>
 
-      "maxProperties": number
-      "maxItems": number
-      "items": unknown[] | Record<string, unknown>
-    }
-  >>
+        "maxProperties": number
+        "maxItems": number
+        "items": unknown[] | Record<string, unknown>
+      }
+    >>
+  }
 } & tInputProps
 
 const {keys: $keys} = Object
@@ -57,7 +60,7 @@ export {
   modelProps, viewerProps, subscribe
 }
 
-function Store({properties, ...props}: tStoreProps) {
+function Store({schema: {properties}, ...props}: tStoreProps) {
   const elements: ReactNode[] = []
 
   for (const name in properties) {
@@ -90,13 +93,22 @@ function Store({properties, ...props}: tStoreProps) {
     , htmlType = $enum ? "radio": "checkbox"
 
     for (let i = 0; i < length; i++) {
+      //TODO fix `value === null`
       const value = source?.[i] ?? i
+      , normalized = value === null || typeof value !== "object"
+      ? value
+      : value.hasOwnProperty("valueOf")
+      ? +value
+      : value.hasOwnProperty("toString")
+      ? value
+      : i
 
       els[i] = <input {...{
         "key": `${name}/${i}`,
         "type": htmlType,
+        //TODO or `=== normalized`
         "defaultChecked": $default === value,
-        ...modelProps(name, value),
+        ...modelProps(name, normalized),
         ...props
       }} />
     }
