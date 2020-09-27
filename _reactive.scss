@@ -1,0 +1,19 @@
+@import "./reactive_config";
+
+@function subscriber($property) {
+  @return [#{$listenerAttribute}-#{$property}];
+}
+
+@mixin subscriber($property) {
+  &#{subscriber($property)} {
+    @content;
+  }
+}
+
+@mixin subscribe($store) {
+  @each $var, $val in $store {
+     #{subscriber($var)} {
+      @content($val);
+    } 
+  } 
+}

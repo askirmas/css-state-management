@@ -1,0 +1,33 @@
+$propagation: "~ *";
+$model-attribute: "id";
+$controller-attribute: "for";
+$viewer-attribute: "data-viewer";
+
+@function model-id($property, $value) {
+  @return #{$property}--#{$value};
+}
+
+@function model-selector($property, $value) {
+  // NB! ##{$id} will be mangled in css-modules  
+  @return #{'[#{$model-attribute}="#{model-id($property, $value)}"]'};
+}
+
+@function controller-selector($property, $value) {
+  @return #{'[#{$controller-attribute}="#{model-id($property, $value)}"]'};
+}
+
+@function viewer-selector($property, $value) {
+  @return #{'[#{$viewer-attribute}-#{model-id($property, $value)}]'};
+}
+
+@mixin controller-by-model($property, $value) {
+  &#{model-selector($property, $value)} #{$propagation} #{controller-selector($property, $value)} {
+    @content;
+  }
+}
+
+@mixin viewer-by-model($property, $value) {
+  &#{model-selector($property, $value)} #{$propagation} #{viewer-selector($property, $value)} {
+    @content;
+  }
+}
