@@ -1,0 +1,31 @@
+{
+  "name": "css-state-management",
+  "version": "0.0.0",
+  "description": "",
+  "scripts": {
+    "dev": "next",
+    "setup": "git config include.path ../.gitconfig",
+    "postinstall": "npm run setup",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/askirmas/css-state-management.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/askirmas/css-state-management/issues#bugs"
+  },
+  "homepage": "https://github.com/askirmas/css-state-management#readme",
+  "devDependencies": {
+    "@types/node": "^14.11.2",
+    "@types/react": "^16.9.49",
+    "next": "^9.5.3",
+    "node-sass-json-importer": "^4.3.0",
+    "react-dom": "^16.13.1",
+    "sass": "^1.26.11",
+    "typescript": "^4.0.3"
+  }
+}
