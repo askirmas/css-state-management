@@ -1,0 +1,19 @@
+{
+  "extends": "./configs/tsconfig.json",
+  "compilerOptions": {
+    "checkJs": false
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.js",
+    "**/*.jsx"
+  ],
+  "exclude": [
+    "node_modules",
+    "coverage",
+    "cypress",
+    "configs"
+  ]
+}

@@ -25,7 +25,7 @@ function viewerProps(model: Record<string|number, string|number>) {
   return attributing(viewerAttribute, properties)
 }
 
-function attributing(base: string, entries: string[]) {
+function attributing(base: string, entries: (undefined|string)[]) {
   const attributes: Record<string, boolean> = {}
   , {length} = entries
 

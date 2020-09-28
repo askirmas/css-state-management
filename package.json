@@ -3,10 +3,12 @@
   "version": "0.0.0",
   "description": "",
   "scripts": {
-    "dev": "next",
-    "setup": "git config include.path ../.gitconfig",
+    "setup": "git-hooks-wrapper init; git config include.path ../.gitconfig",
     "postinstall": "npm run setup",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "npm run compile",
+    "dev": "next",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "compile": "next build && next export"
   },
   "repository": {
     "type": "git",
@@ -20,10 +22,13 @@
   },
   "homepage": "https://github.com/askirmas/css-state-management#readme",
   "devDependencies": {
+    "@types/jest": "^26.0.14",
     "@types/node": "^14.11.2",
     "@types/react": "^16.9.49",
+    "git-hooks-wrapper": "^0.7.1",
     "next": "^9.5.3",
     "node-sass-json-importer": "^4.3.0",
+    "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "sass": "^1.26.11",
     "typescript": "^4.0.3"

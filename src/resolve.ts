@@ -44,9 +44,9 @@ function getIdentifier(source: unknown[], i: number) {
   return (
     value === null || typeof value !== "object"
     ? value
-    : value.hasOwnProperty("valueOf")
+    : value?.hasOwnProperty("valueOf")
     ? +value
-    : value.hasOwnProperty("toString")
+    : value?.hasOwnProperty("toString")
     ? value
     : i
   ) as string|number

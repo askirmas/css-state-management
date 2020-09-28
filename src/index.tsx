@@ -35,12 +35,15 @@ function create<P extends string = string>(
         "key": property,
         property,
         "value": undefined,
-        ...tryCall(controllersProps[property])
+        ...tryCall(controllersProps?.[property])
       }}/>
       continue
     }
 
     const {source, length} = resolve(propertySchema)
+    if (!(length && source))
+      continue
+
     Controllers[property] = new Array(length)
     const controls = Controllers[property]
 
@@ -52,7 +55,7 @@ function create<P extends string = string>(
         "key": `${property}=${value}`,
         property,
         value,
-        ...tryCall(controllersProps[property], [value])
+        ...tryCall(controllersProps?.[property], [value])
       }}/>
     }
   }
@@ -86,7 +89,10 @@ function ModelStore({schema: {properties}, ...props}: tStoreProps) {
     }
 
     const {source, length} = resolve(propertySchema)
-    , els = new Array(length)
+    if (!(source && length))
+      continue
+      
+    const els = new Array(length)
     , htmlType = $enum ? "radio": "checkbox"
 
     for (let i = 0; i < length; i++) {
