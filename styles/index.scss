@@ -14,13 +14,22 @@
 
 //---
 
-.Controller.Menu::before {
-  content: "...";
-}
-
-.Viewer.Menu {
-  border: 1px solid black;
-  width: 100px;
+.Menu {
+  &.Controller::before {
+    content: "...";
+  }  
+  &.Viewer {
+    border: 1px solid black;
+    width: 100px;
+    position: relative;
+    display: inline-grid;
+  }
+  &.Item {
+    display: block;
+    &::after {
+      content: "---";
+    }
+  }
 }
 
 article {
