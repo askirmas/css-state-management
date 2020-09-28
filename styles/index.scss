@@ -1,0 +1,28 @@
+@at-root %--hidden {
+  display: none;
+} 
+
+//---
+
+.Model {
+  &.Boolean:not(:checked) ~ *,
+  &.FocusWithin:not(:focus-within) *,
+  &.Hover:not(:hover) * {
+    &.Viewer {@extend %--hidden;}
+  }
+}
+
+//---
+
+.Controller.Menu::before {
+  content: "...";
+}
+
+.Viewer.Menu {
+  border: 1px solid black;
+  width: 100px;
+}
+
+article {
+  display: flex;
+}
